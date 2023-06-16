@@ -3,7 +3,7 @@ import rimraf from 'rimraf'
 import mkdirp from 'mkdirp'
 import * as fs from 'fs'
 import * as path from 'path'
-import * as toml from 'toml'
+// import * as toml from 'toml'
 
 import axios from 'axios'
 import { remove_start_end_slash } from './utils'
@@ -41,19 +41,19 @@ export function readConfigFile(path: any): string | undefined {
   }
 }
 
-export function read_toml<T>(path: string): T {
-  const raw_config_data = readConfigFile(path)
-  if (!raw_config_data) {
-    throw new Error('Could not read swagger.config.toml file!')
-  }
+// export function read_toml<T>(path: string): T {
+//   const raw_config_data = readConfigFile(path)
+//   if (!raw_config_data) {
+//     throw new Error('Could not read swagger.config.toml file!')
+//   }
 
-  const config = toml.parse(raw_config_data)
-  if (!config) {
-    throw new Error('Could not parse swagger.config.toml file!')
-  }
+//   const config = toml.parse(raw_config_data)
+//   if (!config) {
+//     throw new Error('Could not parse swagger.config.toml file!')
+//   }
 
-  return config
-}
+//   return config
+// }
 
 //prettier-ignore
 export function writeFiles(ROOT: string, PATH: string, fileType: string, files: DTO_File[]): void {
