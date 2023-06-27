@@ -6,7 +6,7 @@ import { parse_api_comments } from './apis/api-ignores'
 
 import { extract_enums_from_ds } from './enums/extract-enums'
 import { extract_models_from_ds } from './models/extract-models'
-import { data_sources } from './configs/data_source.config'
+import { DS_CONFIGS } from './configs/data_source.config'
 import { DTO_File } from './types/types'
 import { SwaggerJSON, get_swagger_JSON, writeFiles } from './common/io'
 import { format_enums_from_ds } from './enums/format-enums'
@@ -109,7 +109,7 @@ async function pipeline(ds_conf: DataSourceConfig) {
 async function run() {
   // the JSON processing of every server is independent,
   // so it ca be done on a different thread
-  data_sources.forEach(async (ds_conf) => {
+  DS_CONFIGS.forEach(async (ds_conf) => {
     await pipeline(ds_conf)
   })
 }

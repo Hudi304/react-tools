@@ -1,6 +1,6 @@
 import chalk from 'chalk'
 import rimraf from 'rimraf'
-import mkdirp from 'mkdirp'
+import { mkdirp } from 'mkdirp'
 import * as fs from 'fs'
 import * as path from 'path'
 // import * as toml from 'toml'
@@ -86,9 +86,7 @@ export type SwaggerJSON = {
   }
 }
 
-export async function get_swagger_JSON(
-  ds: DS_Config,
-): Promise<SwaggerJSON | null> {
+export async function get_swagger_JSON(ds: DS_Config): Promise<SwaggerJSON | null> {
   if (ds.SwaggerPath === undefined) {
     console.log(`Check swagger.config.toml ds_URI is undefined for ${ds.name}`)
   }
@@ -96,16 +94,9 @@ export async function get_swagger_JSON(
   const swagger_json: SwaggerJSON = await axios
     .get(ds.SwaggerPath)
     .then((r) => r.data)
-    .catch((err) =>
-      console.log(chalk.red(`HTTP call to ${ds.SwaggerPath} failed`)),
-    )
+    .catch((err) => console.log(chalk.red(`HTTP call to ${ds.SwaggerPath} failed`)))
 
-  if (
-    !swagger_json ||
-    !swagger_json.paths ||
-    !swagger_json.components ||
-    !swagger_json.components.schemas
-  ) {
+  if (!swagger_json || !swagger_json.paths || !swagger_json.components || !swagger_json.components.schemas) {
     console.log(chalk.red(`Server response is not parsable!`))
     return null
   }
