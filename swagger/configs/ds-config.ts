@@ -6,7 +6,7 @@ import { DataSourceConfig } from './ds-types'
 const swagger_path = '/swagger/v1/swagger.json'
 const DATA_WAREHOUSE_URL = SERVER_URL + swagger_path
 
-const BASE_URL = 'import.meta.env.VITE_APP_DATA_WAREHOUSE'
+const BASE_URL = 'import.meta.env.VITE_APP_API_URL'
 
 const DATA_WAREHOUSE_models_filter = {
   excludeEndsWith: [],

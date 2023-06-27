@@ -6,7 +6,7 @@ import { parse_api_comments } from './apis/api-ignores'
 
 import { extract_enums_from_ds } from './enums/extract-enums'
 import { extract_models_from_ds } from './models/extract-models'
-import { DS_CONFIGS } from './configs/data_source.config'
+import { DS_CONFIGS } from './configs/ds-config'
 import { DTO_File } from './types/types'
 import { SwaggerJSON, get_swagger_JSON, writeFiles } from './common/io'
 import { format_enums_from_ds } from './enums/format-enums'
