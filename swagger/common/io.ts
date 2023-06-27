@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import rimraf from 'rimraf'
+import { sync } from 'rimraf'
 import { mkdirp } from 'mkdirp'
 import * as fs from 'fs'
 import * as path from 'path'
@@ -62,7 +62,7 @@ export function writeFiles(ROOT: string, PATH: string, fileType: string, files: 
 
   // writeLine()
  
-  rimraf.sync(`${root}/${path}`)
+  sync(`${root}/${path}`)
   mkdirp.sync(`${root}/${path}`)
  
   files.forEach((file) => {

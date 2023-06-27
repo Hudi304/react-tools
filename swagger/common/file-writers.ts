@@ -1,16 +1,13 @@
 import { ROOT } from '..'
 import { lowercaseFirstLetter, remove_start_end_slash } from './utils'
 import { writeFile } from './io'
-import rimraf from 'rimraf'
-import mkdirp from 'mkdirp'
+import { rimraf } from 'rimraf'
+import { mkdirp } from 'mkdirp'
 import { ControllerFile_Imp_Ign_Cnt } from '../types/ctrler-types'
 import { DataSourceConfig } from '../configs/ds-types'
 import { ModelFile_Imp_Cnt } from '../types/model-types'
 
-export function write_models(
-  models: Map<string, ModelFile_Imp_Cnt>,
-  ds_conf: DataSourceConfig,
-) {
+export function write_models(models: Map<string, ModelFile_Imp_Cnt>, ds_conf: DataSourceConfig) {
   const PATH = ds_conf.models.path
 
   const root = remove_start_end_slash(ROOT)
@@ -30,10 +27,7 @@ export function write_models(
   }
 }
 
-export function write_controllers(
-  controllers: Map<string, ControllerFile_Imp_Ign_Cnt>,
-  ds_conf: DataSourceConfig,
-) {
+export function write_controllers(controllers: Map<string, ControllerFile_Imp_Ign_Cnt>, ds_conf: DataSourceConfig) {
   const PATH = ds_conf.apis.path
 
   const root = remove_start_end_slash(ROOT)

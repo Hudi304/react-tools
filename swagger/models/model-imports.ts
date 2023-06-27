@@ -15,8 +15,8 @@ export function get_model_imports(
   enums: ENUM_schema[],
   models: MODEL_schema[],
 ): Map<string, ModelFile_Imp> {
-  const enum_map = new Map(enums.map((e) => [e.name, e]))
-  const model_map = new Map(models.map((e) => [e.name, e]))
+  const enum_map = new Map(enums?.map((e) => [e.name, e]))
+  const model_map = new Map(models?.map((e) => [e.name, e]))
   const model_files = new Map<string, ModelFile_Imp>()
 
   const model_iter = model_map[Symbol.iterator]()

@@ -1,9 +1,10 @@
 //TODO make the script search for the .env files
 
+import { SERVER_URL } from '../../urls'
 import { DataSourceConfig } from './ds-types'
 
 const swagger_path = '/swagger/v1/swagger.json'
-const DATA_WAREHOUSE_URL = 'http://https://imcredible-dev-ui.azurewebsites.net' + swagger_path
+const DATA_WAREHOUSE_URL = SERVER_URL + swagger_path
 
 const BASE_URL = 'import.meta.env.VITE_APP_DATA_WAREHOUSE'
 

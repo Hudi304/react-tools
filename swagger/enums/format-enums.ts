@@ -4,7 +4,7 @@ import { DTO_File, FILE_TYPE } from '../types/types'
 export function format_enums_from_ds(enums: ENUM_schema[]): DTO_File[] {
   const dtoFileArray: DTO_File[] = []
 
-  enums.forEach((value) => {
+  enums?.forEach((value) => {
     let fileContent = 'export enum '
     fileContent += value.name
     const enumBodyString = getEnumBody(value.values)

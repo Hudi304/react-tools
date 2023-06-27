@@ -12,8 +12,8 @@ export function get_controller_imports(
   models: MODEL_schema[],
 ): Map<string, ControllerFile_Imp> {
   const controller_map = new Map<string, ControllerFile_Imp>()
-  const enum_map = new Map(enums.map((e) => [e.name, e]))
-  const model_map = new Map(models.map((e) => [e.name, e]))
+  const enum_map = new Map(enums?.map((e) => [e.name, e]))
+  const model_map = new Map(models?.map((e) => [e.name, e]))
   const controller_iter = controllers[Symbol.iterator]()
   for (const [controller_name, endpoints] of controller_iter) {
     const imports_list = collect_imports(endpoints, enum_map, model_map)
