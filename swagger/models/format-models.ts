@@ -90,8 +90,11 @@ function getProperties(model: MODEL_schema): string[] {
     if (isNullable) {
       type = type + ' | null'
     }
+
     const initialValue = getDefaultValue(prop_type)
-    const prop = `  ${modifier} ${propName}${isNullable}: ${type} = ${initialValue};`
+    // const prop = `  ${modifier} ${propName}${isNullable}: ${type} = ${initialValue};`
+    const prop = `  ${modifier} ${propName}${""}: ${type} = ${initialValue};`
+
     properties.push(prop)
   })
 
