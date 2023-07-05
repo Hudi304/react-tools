@@ -118,14 +118,19 @@ export function build_fn_params(endpoint: ENDPOINT_schema, ds_conf: DataSourceCo
   }
 
   const cmp_path_params = compile_param_line(path_params)
-  const cmp_query_params = compile_param_line(query_params)
+  const cmp_query_params = query_params.map((q_param) => {
+    const param_type = getType(q_param.schema)
+    const param_name = q_param.name
+    const parameter = `${param_name}?: ${param_type} | null`
+    return parameter
+  })
   const cmp_header_params = compile_param_line(header_params)
 
   const function_parameters: string[] = cmp_path_params.concat(cmp_header_params)
 
   if (cmp_query_params.length > 0) {
     const lower_first_letter_q_params = cmp_query_params.map(lowercaseFirstLetter)
-    const cmp_query_params_obj_str = 'queryParams: {\n    ' + lower_first_letter_q_params.join('\n    ') + '\n  }'
+    const cmp_query_params_obj_str = 'queryParams: {\n    ' + lower_first_letter_q_params.join('\n    ') + '\n  } = {}'
     function_parameters.push(cmp_query_params_obj_str)
   }
 
