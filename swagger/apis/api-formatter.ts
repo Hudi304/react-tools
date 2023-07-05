@@ -119,7 +119,7 @@ export function build_fn_params(
   params.forEach((param) => {
     const param_type = getType(param.schema)
     const param_name = param.name
-    const parameter = `${param_name}: ${param_type}`
+    const parameter = `${param_name}: ${param_type} | null`
     function_parameters.push(parameter)
   })
 

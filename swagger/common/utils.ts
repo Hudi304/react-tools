@@ -184,11 +184,13 @@ export function getSchemaType(schema: any): SCHEMA_TYPE {
 export function getType(prop: any): any {
   switch (prop.type) {
     case 'integer':
+      return 'number'
     case 'number':
-      return 'number | string'
+      return 'number'
     case 'object':
       return 'any'
     case 'boolean':
+      return 'boolean'
     case 'string':
       return prop.type
     case 'array':
