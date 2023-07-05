@@ -1,16 +1,8 @@
 import { getImportString } from '../models/format-models'
-import {
-  ControllerFile_Imp_Ign,
-  ControllerFile_Imp_Ign_Cnt,
-  ENDPOINT_schema,
-} from '../types/ctrler-types'
+import { ControllerFile_Imp_Ign, ControllerFile_Imp_Ign_Cnt, ENDPOINT_schema } from '../types/ctrler-types'
 import { DataSourceConfig } from '../configs/ds-types'
 import { SCHEMA_TYPE } from '../types/types'
-import {
-  format_generic_type,
-  getType,
-  lowercaseFirstLetter,
-} from '../common/utils'
+import { format_generic_type, getType, lowercaseFirstLetter } from '../common/utils'
 
 //TODO the endpoint call ca be split into (for the comments)
 // fn declaration
@@ -51,10 +43,7 @@ export function format_controllers(
     const import_lines = default_imports.concat(model_imports)
     const baseURL = ds_conf.baseURL
     const server_URL = [`const URL = ${baseURL}\n`]
-    const file_content = import_lines
-      .concat(['\n'])
-      .concat(server_URL)
-      .concat(formatted_endpoints)
+    const file_content = import_lines.concat(['\n']).concat(server_URL).concat(formatted_endpoints)
 
     const file: ControllerFile_Imp_Ign_Cnt = {
       content: file_content,
@@ -91,19 +80,17 @@ function get_response_type(response_type: SCHEMA_TYPE | null): string {
 
 export function build_query_params(queryParams: any[]): string {
   let rez = ''
-  if (queryParams?.length) {
-    const quarryParamArray = queryParams.map(
-      (item: any) => item.name + '=${' + item.name + '}',
-    )
-    rez = ' + `?' + quarryParamArray.join('&') + '`'
+  if (!queryParams?.length) {
+    return rez
   }
+
+  const quarryParamArray = queryParams.map((item: any) => item.name + '=${' + item.name + ' ?? ""}')
+  rez = ' + `?' + quarryParamArray.join('&') + '`'
+
   return rez
 }
 
-export function build_fn_params(
-  endpoint: ENDPOINT_schema,
-  ds_conf: DataSourceConfig,
-) {
+export function build_fn_params(endpoint: ENDPOINT_schema, ds_conf: DataSourceConfig) {
   const endpoint_params = endpoint.params
   const requestType = endpoint.requestType
 
@@ -126,9 +113,7 @@ export function build_fn_params(
   if (requestType !== null && requestType !== null) {
     const fmt_bodyType = format_generic_type(requestType, ds_conf)
 
-    const bodyType = fmt_bodyType?.isGeneric
-      ? fmt_bodyType.wrappedType
-      : fmt_bodyType?.type
+    const bodyType = fmt_bodyType?.isGeneric ? fmt_bodyType.wrappedType : fmt_bodyType?.type
 
     const request_body_fn_param = `body: ${bodyType}`
     function_parameters.push(request_body_fn_param)
@@ -137,10 +122,7 @@ export function build_fn_params(
   return function_parameters
 }
 
-export function build_fn_body(
-  endpoint: ENDPOINT_schema,
-  ds_conf: DataSourceConfig,
-): string {
+export function build_fn_body(endpoint: ENDPOINT_schema, ds_conf: DataSourceConfig): string {
   const method = endpoint.method.toLocaleLowerCase()
   const baseURL = ds_conf.baseURL
   const path = endpoint.path
