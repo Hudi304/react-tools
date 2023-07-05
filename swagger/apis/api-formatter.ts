@@ -84,7 +84,9 @@ export function build_query_params(queryParams: any[]): string {
     return rez
   }
 
-  const quarryParamArray = queryParams.map((item: any) => item.name + '=${' + item.name + ' ?? ""}')
+  const quarryParamArray = queryParams.map(
+    (item: any) => lowercaseFirstLetter(item.name) + '=${ queryParams.' + lowercaseFirstLetter(item.name) + ' ?? ""}',
+  )
   rez = ' + `?' + quarryParamArray.join('&') + '`'
 
   return rez
@@ -100,15 +102,39 @@ export function build_fn_params(endpoint: ENDPOINT_schema, ds_conf: DataSourceCo
   const path_params = path || []
   const query_params = query || []
 
-  const params = header_params.concat(path_params).concat(query_params)
-  const function_parameters: string[] = []
+  // const params = header_params.concat(path_params).concat(query_params)
 
-  params.forEach((param) => {
-    const param_type = getType(param.schema)
-    const param_name = param.name
-    const parameter = `${param_name}: ${param_type} | null`
-    function_parameters.push(parameter)
-  })
+  function compile_param_line(params: any[]) {
+    const param_result: string[] = []
+
+    params.forEach((param) => {
+      const param_type = getType(param.schema)
+      const param_name = param.name
+      const parameter = `${param_name}: ${param_type} | null`
+      param_result.push(parameter)
+    })
+
+    return param_result
+  }
+
+  const cmp_path_params = compile_param_line(path_params)
+  const cmp_query_params = compile_param_line(query_params)
+  const cmp_header_params = compile_param_line(header_params)
+
+  const function_parameters: string[] = cmp_path_params.concat(cmp_header_params)
+
+  if (cmp_query_params.length > 0) {
+    const lower_first_letter_q_params = cmp_query_params.map(lowercaseFirstLetter)
+    const cmp_query_params_obj_str = 'queryParams: {\n    ' + lower_first_letter_q_params.join('\n    ') + '\n  }'
+    function_parameters.push(cmp_query_params_obj_str)
+  }
+
+  // params.forEach((param) => {
+  //   const param_type = getType(param.schema)
+  //   const param_name = param.name
+  //   const parameter = `${param_name}: ${param_type} | null`
+  //   function_parameters.push(parameter)
+  // })
 
   if (requestType !== null && requestType !== null) {
     const fmt_bodyType = format_generic_type(requestType, ds_conf)
