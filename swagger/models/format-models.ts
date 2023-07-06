@@ -76,7 +76,7 @@ function getProperties(model: MODEL_schema): string[] {
   }
   const properties: string[] = []
   model.properties.forEach((property: PROPERTY_Format) => {
-    const modifier = property.access_modifier
+    const access_modifier = property.access_modifier
     const propName = lowercaseFirstLetter(property.props_name)
     const prop_type: SCHEMA_TYPE = property.prop_type
     const isNullable = prop_type.isNullable ? '?' : ''
@@ -93,7 +93,7 @@ function getProperties(model: MODEL_schema): string[] {
 
     const initialValue = getDefaultValue(prop_type)
     // const prop = `  ${modifier} ${propName}${isNullable}: ${type} = ${initialValue};`
-    const prop = `  ${modifier} ${propName}${""}: ${type} = ${initialValue};`
+    const prop = `  ${access_modifier} ${propName}${""}: ${type} = ${initialValue};`
 
     properties.push(prop)
   })
@@ -106,8 +106,8 @@ function getDefaultValue(prop_type: SCHEMA_TYPE): string {
     return 'false'
   } else if (prop_type.isArray) {
     return '[]'
-  } else if (prop_type.type === 'number | string') {
-    return "''"
+  } else if (prop_type.type === 'number') {
+    return "0"
   } else if (prop_type.type === ' string') {
     return "''"
   }

@@ -104,9 +104,15 @@ export function getSchemaType(schema: any): SCHEMA_TYPE {
 
   switch (schema.type) {
     case 'integer':
+      return {
+        type: 'number',
+        isArray: false,
+        isGeneric: false,
+        isNullable,
+      }
     case 'number':
       return {
-        type: 'number | string',
+        type: 'number',
         isArray: false,
         isGeneric: false,
         isNullable,
@@ -127,6 +133,12 @@ export function getSchemaType(schema: any): SCHEMA_TYPE {
         isNullable,
       }
     case 'boolean':
+      return {
+        type: 'boolean',
+        isArray: false,
+        isGeneric: false,
+        isNullable,
+      }
     case 'string':
       return {
         type: schema.type,
@@ -267,10 +279,7 @@ export function remove_start_end_slash(str: string) {
  *  It should de extended to that it supports any number of generics.
  *  T<K<L<M>>>, I don't know if it should support T<M, K>
  */
-export function format_generic_type(
-  prop_type: SCHEMA_TYPE | null,
-  ds_conf: DataSourceConfig,
-): SCHEMA_TYPE | null {
+export function format_generic_type(prop_type: SCHEMA_TYPE | null, ds_conf: DataSourceConfig): SCHEMA_TYPE | null {
   if (prop_type == null) {
     return null
   }
@@ -296,10 +305,7 @@ export function format_generic_type(
     }
   })
 
-  const is_generic =
-    wrapped_generic_type !== null &&
-    generic_type_parameter !== null &&
-    generic_type !== null
+  const is_generic = wrapped_generic_type !== null && generic_type_parameter !== null && generic_type !== null
 
   if (is_generic) {
     return {
@@ -333,10 +339,7 @@ export function mapToArray<T>(files: Map<string, T>): T[] {
   return Array.from(files.values())
 }
 
-export function arrayToMap<T>(
-  array: T[],
-  keyFn: (obj: T) => string,
-): Map<string, T> {
+export function arrayToMap<T>(array: T[], keyFn: (obj: T) => string): Map<string, T> {
   return array.reduce((map, obj) => {
     const key = keyFn(obj)
     map.set(key, obj)

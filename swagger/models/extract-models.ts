@@ -77,11 +77,11 @@ function extract_properties(model: any): PROPERTY_Format[] {
     properties = {}
   }
   const props = Object.entries(properties) || []
-  const mapped_property: PROPERTY_Format[] = props.map(([key, v]) => {
+  const mapped_property: PROPERTY_Format[] = props.map(([key, value]) => {
     return {
       access_modifier: 'public',
       props_name: key,
-      prop_type: getSchemaType(v),
+      prop_type: getSchemaType(value),
       default_value: null,
     }
   })
