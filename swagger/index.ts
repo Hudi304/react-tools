@@ -50,7 +50,7 @@ async function pipeline(ds_conf: DataSourceConfig) {
   let models: MODEL_schema[] 
   let endpoints: ENDPOINT_schema[] 
   await run_stage(`DATA EXTRACTION`, ds_conf , async () => {
-    // enums = extract_enums_from_ds(swagger_json!, ds_conf)
+    enums = extract_enums_from_ds(swagger_json!, ds_conf)
     models = extract_models_from_ds(swagger_json!, ds_conf)
     endpoints = extract_apis_from_ds(swagger_json!, ds_conf)
   })

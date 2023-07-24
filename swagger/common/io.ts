@@ -91,13 +91,16 @@ export async function get_swagger_JSON(ds: DS_Config): Promise<SwaggerJSON | nul
     console.log(`Check swagger.config.toml ds_URI is undefined for ${ds.name}`)
   }
 
-  const swagger_json: SwaggerJSON = await axios
-    .get(ds.SwaggerPath)
-    .then((r) => {
-      return r.data
-    })
-    .catch((err) => console.log(chalk.red(`HTTP call to ${ds.SwaggerPath} failed ${err}`)))
+  const jsonString = fs.readFileSync('src/tools/response.json', 'utf-8')
 
+  const swagger_json = JSON.parse(jsonString)
+
+  // const swagger_json: SwaggerJSON = await axios
+  //   .get(ds.SwaggerPath)
+  //   .then((r) => {
+  //     return r.data
+  //   })
+  //   .catch((err) => console.log(chalk.red(`HTTP call to ${ds.SwaggerPath} failed ${err}`)))
 
   if (!swagger_json || !swagger_json.paths || !swagger_json.components || !swagger_json.components.schemas) {
     console.log(chalk.red(`Server response is not parsable!`))
