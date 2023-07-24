@@ -93,8 +93,11 @@ export async function get_swagger_JSON(ds: DS_Config): Promise<SwaggerJSON | nul
 
   const swagger_json: SwaggerJSON = await axios
     .get(ds.SwaggerPath)
-    .then((r) => r.data)
-    .catch((err) => console.log(chalk.red(`HTTP call to ${ds.SwaggerPath} failed`)))
+    .then((r) => {
+      return r.data
+    })
+    .catch((err) => console.log(chalk.red(`HTTP call to ${ds.SwaggerPath} failed ${err}`)))
+
 
   if (!swagger_json || !swagger_json.paths || !swagger_json.components || !swagger_json.components.schemas) {
     console.log(chalk.red(`Server response is not parsable!`))
