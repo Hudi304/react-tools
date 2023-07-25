@@ -1,43 +1,54 @@
-import { MODEL_schema } from '../types/model-types'
+import { lowercaseFirstLetter } from '../common/utils'
+import { ModelFile_Imp } from '../types/model-types'
+import { FILE_TYPE, PROPERTY_Format } from '../types/types'
 
-const filterUndefined = '.filter((item: any) => item !== undefined)'
+export function getConstructor(file: ModelFile_Imp): string[] {
+  const model = file.format
 
-export function getConstructor(model: MODEL_schema) {
-  // if (model.properties.length === 0) {
-  //   return []
-  // }
-  // let constructor = '\n\n  constructor(obj = {} as any) {\n    obj = obj || {};'
-  // model.properties.forEach((property) => {
-  //   const initValue = getInitValue(property.prop_type.type)
-  //   const notPrimitive =
-  //     /[A-Z]/.test(getAttributeType(property)[0]) &&
-  //     !isEnum(getAttributeType(property), enums)
-  //   const propName = lowercaseFirstLetter(property.name)
-  //   const arrayType = getAttributeType(property).split('[')[0]
-  //   if (initValue === '[]') {
-  //     const constrPart = `\n    this.${propName} = obj.${propName}`
-  //     let initialization = notPrimitive
-  //       ? `?${filterUndefined}\n      .map((item: any) => new ${arrayType}(item))`
-  //       : ''
-  //     initialization += ' || [];'
-  //     constructor += constrPart + initialization
-  //   } else if ('number' === getAttributeType(property)) {
-  //     constructor +=
-  //       `\n    this.${propName} = obj.${propName} !== undefined ` +
-  //       `\n  && obj.${propName} !== null ? obj.${propName} : ${initValue};`
-  //   } else if (notPrimitive) {
-  //     constructor +=
-  //       `\n    this.${propName} = !obj.${propName} ` +
-  //       `\n    ? new ${arrayType}() ` +
-  //       `\n    : new ${arrayType}(obj.${propName});`
-  //   } else {
-  //     if (initValue !== undefined) {
-  //       const defaultValue = initValue !== 'undefined' ? initValue : "''"
-  //       constructor += `\n    this.${propName} = obj.${propName} === null? ${defaultValue} : obj.${propName};`
-  //     } else {
-  //       constructor += `\n    this.${propName} = obj.${propName};`
-  //     }
-  //   }
-  // })
-  // return constructor
+  if (model.properties.length === 0) {
+    return []
+  }
+
+  let constructor: string[] = []
+
+  constructor.push('\n\n  constructor(obj = {} as any) {\n    obj = obj || {};')
+
+  model.properties.forEach((model_prop: PROPERTY_Format) => {
+    const propName = lowercaseFirstLetter(model_prop.props_name)
+
+    let constructor_line = ''
+
+    if (model_prop.prop_type.isArray) {
+      constructor_line = `this.${propName} = obj.${propName} ?? []`
+    } else if ('number' === model_prop.prop_type.type) {
+      constructor_line = `this.${propName} = obj.${propName} ?? 0`
+    } else if ('string' === model_prop.prop_type.type) {
+      constructor_line = `this.${propName} = obj.${propName} ?? \'\'`
+    } else if ('boolean' === model_prop.prop_type.type) {
+      constructor_line = `this.${propName} = obj.${propName} ?? false`
+    } else {
+      const prop_import_opt = file.imports.find((imp) => imp.name === model_prop.prop_type.type)
+
+      if (!prop_import_opt) {
+        console.error('UNHANDLED CASE')
+        console.error(model.name)
+        console.error(model_prop)
+        console.error(file.imports)
+        console.error('\n')
+        return
+      }
+
+      if (prop_import_opt.fileType === FILE_TYPE.ENUM) {
+        constructor_line = `this.${propName} = obj.${propName} ?? ${model_prop.prop_type.type}[0]`
+      } else {
+        constructor_line = `this.${propName} = obj.${propName} ?? new ${model_prop.prop_type.type}()`
+      }
+    }
+    constructor.push(constructor_line)
+  })
+
+  constructor = constructor.map((line) => `    ${line}`)
+  constructor.push('  }')
+
+  return constructor
 }

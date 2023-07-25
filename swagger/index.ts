@@ -5,7 +5,7 @@ import { get_controller_imports } from './apis/api-imports'
 import { parse_api_comments } from './apis/api-ignores'
 
 import { extract_enums_from_ds } from './enums/extract-enums'
-import { extract_models_from_ds } from './models/extract-models'
+import { extract_models_from_ds } from './models/model-extractor'
 import { DS_CONFIGS } from './configs/ds-config'
 import { DTO_File } from './types/types'
 import { SwaggerJSON, get_swagger_JSON, writeFiles } from './common/io'

@@ -1,6 +1,8 @@
 import { clean_model_name, lowercaseFirstLetter, remove_start_end_slash, uppercaseFirstLetter } from '../common/utils'
 import { FILE_TYPE, IMPORT_schema, PROPERTY_Format, SCHEMA_TYPE } from '../types/types'
 import { ModelFile_Imp, ModelFile_Imp_Cnt, MODEL_schema } from '../types/model-types'
+import { getDefaultValue } from './model-utils'
+import { getConstructor } from './model-constructor'
 
 export function format_models_from_ds(models: Map<string, ModelFile_Imp>): Map<string, ModelFile_Imp_Cnt> {
   const rez = new Map<string, ModelFile_Imp_Cnt>()
@@ -10,17 +12,22 @@ export function format_models_from_ds(models: Map<string, ModelFile_Imp>): Map<s
     const model = model_file.format
     let importString: string[] = []
     let propertiesString: string[] = []
-    const constructor: string[] = []
+    let constructor: string[] = []
     if (model) {
       importString = getImportString(model_file.imports)
       propertiesString = getProperties(model)
-      // constructor = getConstructor(model)
+      constructor = getConstructor(model_file)
     }
     const fileName = clean_model_name(model.name)
     const modelClassName = uppercaseFirstLetter(fileName)
     const class_declaration = [`export class ${modelClassName} { `]
 
-    const line_arr = importString.concat(['']).concat(class_declaration).concat(propertiesString).concat(['}'])
+    const line_arr = importString
+      .concat([''])
+      .concat(class_declaration)
+      .concat(propertiesString)
+      .concat(constructor)
+      .concat(['}'])
 
     const md: ModelFile_Imp_Cnt = {
       format: model_file.format,
@@ -71,9 +78,9 @@ function getProperties(model: MODEL_schema): string[] {
       type = type + ' | null'
     }
 
-    let initialValue = getDefaultValue(prop_type);
-    if (model_prop.default_value){
-      initialValue = model_prop.default_value;
+    let initialValue = getDefaultValue(prop_type)
+    if (model_prop.default_value) {
+      initialValue = model_prop.default_value
     }
     // const prop = `  ${modifier} ${propName}${isNullable}: ${type} = ${initialValue};`
     const prop = `  ${access_modifier} ${propName}${''}: ${type} = ${initialValue};`
@@ -82,17 +89,4 @@ function getProperties(model: MODEL_schema): string[] {
   })
 
   return properties
-}
-
-function getDefaultValue(prop_type: SCHEMA_TYPE): string {
-  if (prop_type.type === 'boolean') {
-    return 'false'
-  } else if (prop_type.isArray) {
-    return '[]'
-  } else if (prop_type.type === 'number') {
-    return '0'
-  } else if (prop_type.type === ' string') {
-    return "''"
-  }
-  return `{} as ${prop_type.type}`
 }
