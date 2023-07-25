@@ -1,4 +1,4 @@
-import { getImportString } from '../models/format-models'
+import { getImportString } from '../models/model-formetter'
 import { ControllerFile_Imp_Ign, ControllerFile_Imp_Ign_Cnt, ENDPOINT_schema } from '../types/ctrler-types'
 import { DataSourceConfig } from '../configs/ds-types'
 import { SCHEMA_TYPE } from '../types/types'

@@ -1,24 +1,8 @@
-import {
-  clean_model_name,
-  lowercaseFirstLetter,
-  remove_start_end_slash,
-  uppercaseFirstLetter,
-} from '../common/utils'
-import {
-  FILE_TYPE,
-  IMPORT_schema,
-  PROPERTY_Format,
-  SCHEMA_TYPE,
-} from '../types/types'
-import {
-  ModelFile_Imp,
-  ModelFile_Imp_Cnt,
-  MODEL_schema,
-} from '../types/model-types'
+import { clean_model_name, lowercaseFirstLetter, remove_start_end_slash, uppercaseFirstLetter } from '../common/utils'
+import { FILE_TYPE, IMPORT_schema, PROPERTY_Format, SCHEMA_TYPE } from '../types/types'
+import { ModelFile_Imp, ModelFile_Imp_Cnt, MODEL_schema } from '../types/model-types'
 
-export function format_models_from_ds(
-  models: Map<string, ModelFile_Imp>,
-): Map<string, ModelFile_Imp_Cnt> {
+export function format_models_from_ds(models: Map<string, ModelFile_Imp>): Map<string, ModelFile_Imp_Cnt> {
   const rez = new Map<string, ModelFile_Imp_Cnt>()
 
   const models_iter = models[Symbol.iterator]()
@@ -36,11 +20,7 @@ export function format_models_from_ds(
     const modelClassName = uppercaseFirstLetter(fileName)
     const class_declaration = [`export class ${modelClassName} { `]
 
-    const line_arr = importString
-      .concat([''])
-      .concat(class_declaration)
-      .concat(propertiesString)
-      .concat(['}'])
+    const line_arr = importString.concat(['']).concat(class_declaration).concat(propertiesString).concat(['}'])
 
     const md: ModelFile_Imp_Cnt = {
       format: model_file.format,
@@ -75,10 +55,10 @@ function getProperties(model: MODEL_schema): string[] {
     return []
   }
   const properties: string[] = []
-  model.properties.forEach((property: PROPERTY_Format) => {
-    const access_modifier = property.access_modifier
-    const propName = lowercaseFirstLetter(property.props_name)
-    const prop_type: SCHEMA_TYPE = property.prop_type
+  model.properties.forEach((model_prop: PROPERTY_Format) => {
+    const access_modifier = model_prop.access_modifier
+    const propName = lowercaseFirstLetter(model_prop.props_name)
+    const prop_type: SCHEMA_TYPE = model_prop.prop_type
     const isNullable = prop_type.isNullable ? '?' : ''
 
     let type: string = prop_type.type
@@ -91,9 +71,12 @@ function getProperties(model: MODEL_schema): string[] {
       type = type + ' | null'
     }
 
-    const initialValue = getDefaultValue(prop_type)
+    let initialValue = getDefaultValue(prop_type);
+    if (model_prop.default_value){
+      initialValue = model_prop.default_value;
+    }
     // const prop = `  ${modifier} ${propName}${isNullable}: ${type} = ${initialValue};`
-    const prop = `  ${access_modifier} ${propName}${""}: ${type} = ${initialValue};`
+    const prop = `  ${access_modifier} ${propName}${''}: ${type} = ${initialValue};`
 
     properties.push(prop)
   })
@@ -107,7 +90,7 @@ function getDefaultValue(prop_type: SCHEMA_TYPE): string {
   } else if (prop_type.isArray) {
     return '[]'
   } else if (prop_type.type === 'number') {
-    return "0"
+    return '0'
   } else if (prop_type.type === ' string') {
     return "''"
   }
