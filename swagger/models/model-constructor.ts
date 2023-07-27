@@ -39,7 +39,7 @@ export function getConstructor(file: ModelFile_Imp): string[] {
       }
 
       if (prop_import_opt.fileType === FILE_TYPE.ENUM) {
-        constructor_line = `this.${propName} = obj.${propName} ?? ${model_prop.prop_type.type}[0]`
+        constructor_line = `this.${propName} = obj.${propName} ?? ${model_prop.prop_type.type}[${model_prop.prop_type.type}[0] as any]`
       } else {
         constructor_line = `this.${propName} = obj.${propName} ?? new ${model_prop.prop_type.type}()`
       }
