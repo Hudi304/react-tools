@@ -46,6 +46,7 @@ export type PROPERTY_Format = {
   props_name: string
   prop_type: SCHEMA_TYPE
   default_value: string | null
+  isNullable: boolean
 }
 
 export type MODEL_FROM_JSON_Format = {

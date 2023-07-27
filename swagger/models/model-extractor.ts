@@ -65,14 +65,22 @@ function extract_properties(model: any): PROPERTY_Format[] {
   const props = Object.entries(properties) || []
   const mapped_property: PROPERTY_Format[] = props.map(([key, value]) => {
     let default_value = null
+    let is_nullable = false
+
+    if ((value as any).nullable) {
+      is_nullable = (value as any).nullable
+    }
+
     if ((value as any).default) {
       default_value = (value as any).default
     }
+
     return {
       access_modifier: 'public',
       props_name: key,
       prop_type: getSchemaType(value),
       default_value,
+      isNullable: is_nullable,
     }
   })
   return mapped_property

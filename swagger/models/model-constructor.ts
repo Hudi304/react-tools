@@ -18,14 +18,24 @@ export function getConstructor(file: ModelFile_Imp): string[] {
 
     let constructor_line = ''
 
+    function getDefault(default_value: string) {
+      if (model_prop.isNullable) {
+        return 'null'
+      }
+      if (model_prop.default_value != null) {
+        return model_prop.default_value
+      }
+      return default_value
+    }
+
     if (model_prop.prop_type.isArray) {
-      constructor_line = `this.${propName} = obj.${propName} ?? []`
+      constructor_line = `this.${propName} = obj.${propName} ?? ${getDefault('[]')}`
     } else if ('number' === model_prop.prop_type.type) {
-      constructor_line = `this.${propName} = obj.${propName} ?? 0`
+      constructor_line = `this.${propName} = obj.${propName} ?? ${getDefault('0')}`
     } else if ('string' === model_prop.prop_type.type) {
-      constructor_line = `this.${propName} = obj.${propName} ?? \'\'`
+      constructor_line = `this.${propName} = obj.${propName} ?? ${getDefault("''")}`
     } else if ('boolean' === model_prop.prop_type.type) {
-      constructor_line = `this.${propName} = obj.${propName} ?? false`
+      constructor_line = `this.${propName} = obj.${propName} ?? ${getDefault('false')}`
     } else {
       const prop_import_opt = file.imports.find((imp) => imp.name === model_prop.prop_type.type)
 
