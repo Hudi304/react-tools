@@ -1,36 +1,36 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { extract_apis_from_ds, group_apis } from './apis/api-extractor'
-import { format_controllers } from './apis/api-formatter'
-import { get_controller_imports } from './apis/api-imports'
-import { parse_api_comments } from './apis/api-ignores'
+import { extract_apis_from_ds, group_apis } from './apis/api-extractor';
+import { format_controllers } from './apis/api-formatter';
+import { get_controller_imports } from './apis/api-imports';
+import { parse_api_comments } from './apis/api-ignores';
 
-import { extract_enums_from_ds } from './enums/extract-enums'
-import { extract_models_from_ds } from './models/model-extractor'
-import { DS_CONFIGS } from './configs/ds-config'
-import { DTO_File } from './types/types'
-import { SwaggerJSON, get_swagger_JSON, writeFiles } from './common/io'
-import { format_enums_from_ds } from './enums/format-enums'
-import { format_models_from_ds } from './models/model-formetter'
-import { get_model_imports } from './models/model-imports'
-import { write_controllers, write_models } from './common/file-writers'
-import { ENUM_schema } from './types/enum-types'
-import { MODEL_schema, ModelFile_Imp, ModelFile_Imp_Cnt } from './types/model-types'
+import { extract_enums_from_ds } from './enums/extract-enums';
+import { extract_models_from_ds } from './models/model-extractor';
+import { DS_CONFIGS } from './configs/ds-config';
+import { DTO_File } from './types/types';
+import { SwaggerJSON, get_swagger_JSON, writeFiles } from './common/io';
+import { format_enums_from_ds } from './enums/format-enums';
+import { format_models_from_ds } from './models/model-formetter';
+import { get_model_imports } from './models/model-imports';
+import { write_controllers, write_models } from './common/file-writers';
+import { ENUM_schema } from './types/enum-types';
+import { MODEL_schema, ModelFile_Imp, ModelFile_Imp_Cnt } from './types/model-types';
 import {
   ENDPOINT_schema,
   ControllerFile_Imp,
   ControllerFile_Imp_Ign,
   ControllerFile_Imp_Ign_Cnt,
-} from './types/ctrler-types'
+} from './types/ctrler-types';
 
-import { DataSourceConfig } from './configs/ds-types'
-import { filter_controllers, filter_models } from './common/filters/filters'
-import { run_stage } from './common/common'
-import { lint } from './lint/es_lint'
-import { add_args_to_config } from './args'
-import { is_git_tree_clean } from './common/git'
+import { DataSourceConfig } from './configs/ds-types';
+import { filter_controllers, filter_models } from './common/filters/filters';
+import { run_stage } from './common/common';
+import { es_lint, lint } from './lint/lint';
+import { add_args_to_config } from './args';
+import { is_git_tree_clean } from './common/git';
 
-export const ROOT = 'src'
-export const CONFIG_PATH = './src/tools/swagger.config.toml'
+export const ROOT = 'src';
+export const CONFIG_PATH = './src/tools/swagger.config.toml';
 
 //todo make deleting files a different stage
 // prettier-ignore
@@ -108,8 +108,8 @@ async function pipeline(ds_conf: DataSourceConfig) {
   //?? ES Lint format stage 
   await run_stage(`ES Lint Format FILES`, ds_conf, async () => {
     await lint("src/common/enums/**/*") // these can run in parallel 
-    await lint("src/common/models/**/*")
-    await lint("src/api/endpoints/**/*")
+    await es_lint("src/common/models/**/*")
+    await es_lint("src/api/endpoints/**/*")
   })
 
 }
@@ -118,14 +118,14 @@ async function run(args: string[]) {
   // the JSON processing of every server is independent,
   // so it ca be done on a different thread
 
-  if (!await is_git_tree_clean()) {
-    return
+  if (!(await is_git_tree_clean())) {
+    return;
   }
 
   DS_CONFIGS.forEach(async (ds_conf) => {
-    if (add_args_to_config(args, ds_conf) !== 0) return
-    await pipeline(ds_conf)
-  })
+    if (add_args_to_config(args, ds_conf) !== 0) return;
+    await pipeline(ds_conf);
+  });
 }
 
-run(process.argv)
+run(process.argv);

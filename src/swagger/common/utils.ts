@@ -249,7 +249,7 @@ export function filterRefs(reference: string): string {
 }
 
 export function isEnum(ref: any, enums: any) {
-  const cleanRef = ref.replace(/[\[\]]/g, '')
+  const cleanRef = ref.replace(/[[\]]/g, '')
   return enums && enums.find((enu: any) => enu.name === cleanRef)
 }
 
