@@ -1,7 +1,8 @@
-import { Param } from '../args'
+import { Linter, Param } from '../args'
 
 export type DataSourceConfig = {
   params?: Param
+  linter?: Linter
   name: string
   swagger_URL: string
   baseURL: string
