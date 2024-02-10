@@ -11,6 +11,8 @@ import { DTO_File } from '../types/types'
 import { DataSourceConfig } from '../configs/ds-types'
 import { Param } from '../args'
 import { Print } from './printers'
+import { exec } from 'child_process'
+import readline from 'readline';
 
 const getDirName = path.dirname
 
@@ -18,20 +20,6 @@ export function writeLine() {
   const line = '-------------------------------------------------------'
   console.info(chalk.white(line))
 }
-
-// export function getConfig(path: string): Config {
-//   const raw_config_data = readConfigFile(path)
-//   if (!raw_config_data) {
-//     throw new Error('Could not read swagger.config.toml file!')
-//   }
-
-//   const config = toml.parse(raw_config_data)
-//   if (!config) {
-//     throw new Error('Could not parse swagger.config.toml file!')
-//   }
-
-//   return config
-// }
 
 export function readConfigFile(path: any): string | undefined {
   try {
@@ -42,20 +30,6 @@ export function readConfigFile(path: any): string | undefined {
     return undefined
   }
 }
-
-// export function read_toml<T>(path: string): T {
-//   const raw_config_data = readConfigFile(path)
-//   if (!raw_config_data) {
-//     throw new Error('Could not read swagger.config.toml file!')
-//   }
-
-//   const config = toml.parse(raw_config_data)
-//   if (!config) {
-//     throw new Error('Could not parse swagger.config.toml file!')
-//   }
-
-//   return config
-// }
 
 //prettier-ignore
 export function writeFiles(ROOT: string, PATH: string, fileType: string, files: DTO_File[]): void {
@@ -89,33 +63,22 @@ export type SwaggerJSON = {
 }
 
 export async function get_swagger_JSON(ds: DS_Config): Promise<SwaggerJSON | null> {
-
-  if (ds.swagger_URL === undefined) {
-    console.error(`Check swagger.config.toml ds_URI is undefined for ${ds.name}`)
-  }
-
   let swagger_json: SwaggerJSON | null = null
+
 
   switch (ds.params) {
     case Param.LOCAL: swagger_json = read_local_file(ds); break
     case Param.DEV: swagger_json = await get_swagger_from_server(ds); break
   }
-
-  if (!swagger_json) {
-    // console.info(chalk.red(`Could not get swagger.json`))
-    return null
-  }
+  if (!swagger_json) return null
 
   // prettier-ignore
-  if (
-    !swagger_json ||
-    !swagger_json.paths ||
+  if (!swagger_json.paths ||
     !swagger_json.components ||
     !swagger_json.components.schemas
   ) {
-    console.info(chalk.red(`Server response is not parsable!`))
+    Print.Err(`Server response is not parsable!`)
     console.info(swagger_json)
-
     return null
   }
 
@@ -135,20 +98,33 @@ function read_local_file(ds: DataSourceConfig): SwaggerJSON | null {
   }
 
   const jsonString = fs.readFileSync(ds.local_swagger_path!, 'utf-8')
-  const swagger_json = JSON.parse(jsonString)
 
-  Print.Suc(`Got swagger json from '${ds.local_swagger_path}'`)
+  try {
+    const swagger_json = JSON.parse(jsonString)
+    Print.Suc(`Got swagger json from '${ds.local_swagger_path}'`)
 
-  return swagger_json
+    return swagger_json
+
+  } catch (err) {
+
+    const json_path = Print.path(ds.local_swagger_path)
+    console.log(chalk.red(`Error parsing local swagger file : ${json_path} \n ${err}`))
+
+    return null
+  }
 }
 
-async function get_swagger_from_server(ds: DataSourceConfig): Promise<SwaggerJSON> {
-  const swagger_json = await axios
+async function get_swagger_from_server(ds: DataSourceConfig): Promise<SwaggerJSON | null> {
+  const swagger_json: SwaggerJSON | null = await axios
     .get(ds.swagger_URL)
-    .then((r) => r.data)
-    .catch((err) => console.info(chalk.red(`HTTP call to ${ds.swagger_URL} failed ${err}`)))
-
-  console.info(chalk.green(`Got swagger json from ${ds.swagger_URL}`))
+    .then((r) => {
+      Print.Suc(`Got swagger json from ${ds.swagger_URL}`)
+      return r.data
+    })
+    .catch((err) => {
+      Print.Err(`HTTP call to ${ds.swagger_URL} failed : \n   ${err}`)
+      return null
+    })
 
   return swagger_json
 }

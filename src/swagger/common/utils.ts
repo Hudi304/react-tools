@@ -1,9 +1,11 @@
 import { ENUM_schema } from '../types/enum-types'
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import chalk from 'chalk'
 import { DataSourceConfig } from '../configs/ds-types'
 import { MODEL_schema } from '../types/model-types'
 import { SCHEMA_TYPE } from '../types/types'
+
+export type Rez<R, E> = [R | null, E | null]
+
 
 export function equals_ignore_case(str1: string, str2: string) {
   const str_low1 = str1.toLowerCase()

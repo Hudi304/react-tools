@@ -27,6 +27,7 @@ import { filter_controllers, filter_models } from './common/filters/filters'
 import { run_stage } from './common/common'
 import { lint } from './lint/es_lint'
 import { add_args_to_config } from './args'
+import { is_git_tree_clean } from './common/git'
 
 export const ROOT = 'src'
 export const CONFIG_PATH = './src/tools/swagger.config.toml'
@@ -37,7 +38,9 @@ async function pipeline(ds_conf: DataSourceConfig) {
   //?? HTTP request Stage
   let swagger_json: SwaggerJSON | null = null
   await run_stage('HTTP REQUEST', ds_conf, async () => {
-    swagger_json = await get_swagger_JSON(ds_conf)
+    const rez = await get_swagger_JSON(ds_conf)
+    if (rez === null) return false
+    swagger_json = rez
   })
 
   if (swagger_json === null) return
@@ -114,6 +117,11 @@ async function pipeline(ds_conf: DataSourceConfig) {
 async function run(args: string[]) {
   // the JSON processing of every server is independent,
   // so it ca be done on a different thread
+
+  if (!await is_git_tree_clean()) {
+    return
+  }
+
   DS_CONFIGS.forEach(async (ds_conf) => {
     if (add_args_to_config(args, ds_conf) !== 0) return
     await pipeline(ds_conf)

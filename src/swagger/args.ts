@@ -1,3 +1,4 @@
+import { Print } from './common/printers'
 import { DataSourceConfig } from './configs/ds-types'
 import minimist from 'minimist'
 
@@ -14,6 +15,9 @@ export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): n
   // add another  -t paremeter for tests 
   // Check for help option
   if (argv.h || argv.help) {
+
+
+
     console.log('Usage:')
     console.log('   -h, --help     Show help')
     console.log('   -l             Get the swagger.json file from this machine')
@@ -23,22 +27,22 @@ export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): n
   }
 
   if (argv.l) {
-    console.log('Read local response.json')
+    Print.Info('Read local response.json')
     ds_conf.params = Param.LOCAL
   }
 
   if (argv.d) {
-    console.log('Get swagger.json from the server.')
+    Print.Info('Get swagger.json from the server.')
     ds_conf.params = Param.DEV
   }
 
   if (argv.d && argv.l) {
-    console.error('Invalid arguments! -d -l')
+    Print.Err('Invalid arguments! -d -l')
     return 2
   }
 
   if (!argv.d && !argv.l) {
-    console.log('DEFAULT : Get swagger.json from the server.')
+    Print.Info('DEFAULT : Get swagger.json from the server.')
     ds_conf.params = Param.DEV
   }
 
