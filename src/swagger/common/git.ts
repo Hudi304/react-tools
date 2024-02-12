@@ -23,6 +23,8 @@ export async function is_git_tree_clean(): Promise<boolean> {
       return isEnum || isModel || isController;
     });
 
+    console.log(onlyGeneratedFilesChanged);
+
     if (onlyGeneratedFilesChanged) {
       return true;
     }
