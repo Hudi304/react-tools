@@ -54,7 +54,7 @@ export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): A
   }
 
   if (argv.l) {
-    Print.Info('Read local response.json');
+    // Print.Info('Read local response.json');
     ds_conf.params = Param.LOCAL;
   }
 
@@ -76,7 +76,7 @@ export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): A
   if (argv.linter) {
     // Get the value of the linter option
     const linter_value: string = argv.linter;
-    Print.Info(`Using linter: ${linter_value}`);
+    // Print.Info(`Using linter: ${linter_value}`);
 
     if (!linter_value) {
       ds_conf.linter = Linter.None;

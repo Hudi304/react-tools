@@ -12,7 +12,7 @@ import { SwaggerJSON, get_swagger_JSON, writeFiles } from './common/io';
 import { format_enums_from_ds } from './enums/format-enums';
 import { format_models_from_ds } from './models/model-formetter';
 import { get_model_imports } from './models/model-imports';
-import { write_controllers, write_models } from './common/file-writers';
+import { write_controllers, write_enums, write_models } from './common/file-writers';
 import { ENUM_schema } from './types/enum-types';
 import { MODEL_schema, ModelFile_Imp, ModelFile_Imp_Cnt } from './types/model-types';
 import {
@@ -37,7 +37,7 @@ export const CONFIG_PATH = './src/tools/swagger.config.toml';
 async function pipeline(ds_conf: DataSourceConfig) {
   //?? HTTP request Stage
   let swagger_json: SwaggerJSON | null = null
-  await run_stage('HTTP REQUEST', ds_conf, async () => {
+  await run_stage('FETCH DATA', ds_conf, async () => {
     const rez = await get_swagger_JSON(ds_conf)
     if (rez === null) return false
     swagger_json = rez
@@ -99,7 +99,7 @@ async function pipeline(ds_conf: DataSourceConfig) {
 
   //?? File Writing Stage
   await run_stage(`WRITE FILES`, ds_conf, async () => {
-    writeFiles(ROOT, ds_conf.enums.path, 'enum.ts', formatted_enums!)
+    write_enums(formatted_enums!, ds_conf)
     write_models(formatted_models!, ds_conf)
     write_controllers(formatted_controllers!, ds_conf)
   })

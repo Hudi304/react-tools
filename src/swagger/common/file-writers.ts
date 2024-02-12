@@ -1,32 +1,60 @@
-import { ROOT } from '..'
-import { lowercaseFirstLetter, remove_start_end_slash } from './utils'
-import { writeFile } from './io'
-import { rimraf } from 'rimraf'
-import { mkdirp } from 'mkdirp'
-import { ControllerFile_Imp_Ign_Cnt } from '../types/ctrler-types'
-import { DataSourceConfig } from '../configs/ds-types'
-import { ModelFile_Imp_Cnt } from '../types/model-types'
+import { ROOT } from '..';
+import { lowercaseFirstLetter, remove_start_end_slash } from './utils';
+import { writeFile } from './io';
+import { mkdirp } from 'mkdirp';
+import { ControllerFile_Imp_Ign_Cnt } from '../types/ctrler-types';
+import { DataSourceConfig } from '../configs/ds-types';
+import { ModelFile_Imp_Cnt } from '../types/model-types';
+import fs from 'fs';
+import { DTO_File } from '../types/types';
 
-export function write_models(
-  models: Map<string, ModelFile_Imp_Cnt>,
-  ds_conf: DataSourceConfig,
-) {
-  const PATH = ds_conf.models.path
+export function write_enums(models: DTO_File[], ds_conf: DataSourceConfig) {
+  const PATH = ds_conf.enums.path;
 
-  const root = remove_start_end_slash(ROOT)
-  const path = remove_start_end_slash(PATH)
+  const root = remove_start_end_slash(ROOT);
+  const path = remove_start_end_slash(PATH);
 
-  // writeLine()
+  if (!fs.existsSync(`${root}/${path}`)) {
+    mkdirp.sync(`${root}/${path}`);
+  }
 
-  rimraf.sync(`${root}/${path}`)
-  mkdirp.sync(`${root}/${path}`)
+  delete_files(`${root}/${path}`, '.enum.ts');
 
-  const models_iter = models[Symbol.iterator]()
+  models.forEach((enum_file) => {
+    const file_path = `${root}/${path}/${enum_file.fileName}.enum.ts`;
+    const content = enum_file.content;
+
+    writeFile(file_path, content);
+  });
+}
+
+export function write_models(models: Map<string, ModelFile_Imp_Cnt>, ds_conf: DataSourceConfig) {
+  const PATH = ds_conf.models.path;
+
+  const root = remove_start_end_slash(ROOT);
+  const path = remove_start_end_slash(PATH);
+
+  if (!fs.existsSync(`${root}/${path}`)) {
+    mkdirp.sync(`${root}/${path}`);
+  }
+
+  delete_files(`${root}/${path}`, '.model.ts');
+
+  const models_iter = models[Symbol.iterator]();
   for (const [model_name, model] of models_iter) {
-    const file_path = `${root}/${path}/${model_name}.model.ts`
-    const content = model.content.join('\n')
+    const file_path = `${root}/${path}/${model_name}.model.ts`;
+    const content = model.content.join('\n');
 
-    writeFile(file_path, content)
+    writeFile(file_path, content);
+  }
+}
+
+export function delete_files(path: string, ends_with: string) {
+  const files = fs.readdirSync(path);
+  for (const file of files) {
+    if (file.endsWith(ends_with)) {
+      fs.unlinkSync(`${path}/${file}`);
+    }
   }
 }
 
@@ -34,22 +62,23 @@ export function write_controllers(
   controllers: Map<string, ControllerFile_Imp_Ign_Cnt>,
   ds_conf: DataSourceConfig,
 ) {
-  const PATH = ds_conf.apis.path
+  const PATH = ds_conf.apis.path;
 
-  const root = remove_start_end_slash(ROOT)
-  const path = remove_start_end_slash(PATH)
+  const root = remove_start_end_slash(ROOT);
+  const path = remove_start_end_slash(PATH);
 
-  // writeLine()
+  if (!fs.existsSync(`${root}/${path}`)) {
+    mkdirp.sync(`${root}/${path}`);
+  }
 
-  rimraf.sync(`${root}/${path}`)
-  mkdirp.sync(`${root}/${path}`)
+  delete_files(`${root}/${path}`, '.api.ts');
 
-  const controllers_iter = controllers[Symbol.iterator]()
+  const controllers_iter = controllers[Symbol.iterator]();
   for (const [controller_name, controller] of controllers_iter) {
-    const file_name = lowercaseFirstLetter(controller_name)
-    const file_path = `${root}/${path}/${file_name}.api.ts`
-    const content = controller.content.join('\n')
+    const file_name = lowercaseFirstLetter(controller_name);
+    const file_path = `${root}/${path}/${file_name}.api.ts`;
+    const content = controller.content.join('\n');
 
-    writeFile(file_path, content)
+    writeFile(file_path, content);
   }
 }
