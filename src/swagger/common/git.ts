@@ -5,9 +5,13 @@ import { DS_CONFIGS } from '../configs/ds-config';
 export async function is_git_tree_clean(): Promise<boolean> {
   const child_process = exec('git status --porcelain');
 
-  if (child_process.stdout) {
-    const gitStatus = child_process.stdout.toString();
+  console.log(`|${child_process.stdout}|`);
 
+  if (!child_process.stdout) return true;
+
+  const gitStatus = child_process.stdout.toString();
+
+  if (gitStatus?.trim().length > 0) {
     const changedFiles = gitStatus
       .split('\n')
       .map((line) => line.trim())
