@@ -4,32 +4,39 @@ import {
   SchemaImports,
   SchemaIgnores,
   SchemaFileContent,
-} from './types'
+} from './types';
+
+export type EndpointParam = {
+  name: string;
+  in: string;
+  required: boolean;
+  schema: any;
+};
 
 export type ENDPOINT_schema = {
-  controller_name: string
+  controller_name: string;
 
-  methodName: string
-  method: string
-  path: string
+  methodName: string;
+  method: string;
+  path: string;
   // TODO make this a result
-  summary: string | null
+  summary: string | null;
 
-  responseType: SCHEMA_TYPE | null
-  requestType: SCHEMA_TYPE | null
+  responseType: SCHEMA_TYPE | null;
+  requestType: SCHEMA_TYPE | null;
 
-  imports: IMPORT_schema[] | null
+  imports: IMPORT_schema[] | null;
   params: {
-    path: any[]
-    query: any[]
-    header: any[]
-  }
-}
+    path: EndpointParam[];
+    query: EndpointParam[];
+    header: EndpointParam[];
+  };
+};
 
 export type CONTROLLER_format = {
-  file_name: string
-  endpoints: ENDPOINT_schema[]
-}
+  file_name: string;
+  endpoints: ENDPOINT_schema[];
+};
 
 /**
  * ```typescript
@@ -41,7 +48,7 @@ export type CONTROLLER_format = {
  * }
  * ```
  */
-export type ControllerFile_Imp = CONTROLLER_format & SchemaImports
+export type ControllerFile_Imp = CONTROLLER_format & SchemaImports;
 
 /**
  * ```typescript
@@ -54,9 +61,7 @@ export type ControllerFile_Imp = CONTROLLER_format & SchemaImports
  * }
  * ```
  */
-export type ControllerFile_Imp_Ign = CONTROLLER_format &
-  SchemaImports &
-  SchemaIgnores
+export type ControllerFile_Imp_Ign = CONTROLLER_format & SchemaImports & SchemaIgnores;
 
 /**
  * ```typescript
@@ -73,4 +78,4 @@ export type ControllerFile_Imp_Ign = CONTROLLER_format &
 export type ControllerFile_Imp_Ign_Cnt = CONTROLLER_format &
   SchemaImports &
   SchemaIgnores &
-  SchemaFileContent
+  SchemaFileContent;

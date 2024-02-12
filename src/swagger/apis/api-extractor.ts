@@ -1,7 +1,7 @@
 import { clean_model_name, format_generic_type, getSchemaType, getType } from '../common/utils';
 import { SCHEMA_TYPE } from '../types/types';
 import { SwaggerJSON } from '../common/io';
-import { ENDPOINT_schema } from '../types/ctrler-types';
+import { ENDPOINT_schema, EndpointParam } from '../types/ctrler-types';
 import { DataSourceConfig } from '../configs/ds-types';
 
 /** .*/
@@ -156,7 +156,7 @@ function get_2xx_response_type(endpoint: any, ds_conf: DataSourceConfig): SCHEMA
   };
 }
 
-function get_parameters(endpoint: any, param_type: string): any[] {
+function get_parameters(endpoint: any, param_type: string): EndpointParam[] {
   const parameters = endpoint.parameters;
 
   if (!parameters || parameters.length === 0) return [];
