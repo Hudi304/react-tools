@@ -25,7 +25,7 @@ import {
 import { DataSourceConfig } from './configs/ds-types';
 import { filter_controllers, filter_models } from './common/filters/filters';
 import { run_stage } from './common/common';
-import { es_lint, lint } from './lint/lint';
+import { lint } from './lint/lint';
 import { add_args_to_config } from './args';
 import { is_git_tree_clean } from './common/git';
 
@@ -107,11 +107,10 @@ async function pipeline(ds_conf: DataSourceConfig) {
 
   //?? ES Lint format stage 
   await run_stage(`ES Lint Format FILES`, ds_conf, async () => {
-    await lint("src/common/enums/**/*") // these can run in parallel 
-    await es_lint("src/common/models/**/*")
-    await es_lint("src/api/endpoints/**/*")
+    await lint(ds_conf, "src/common/enums/**/*") // these can run in parallel 
+    await lint(ds_conf, "src/common/models/**/*")
+    await lint(ds_conf, "src/api/endpoints/**/*")
   })
-
 }
 
 async function run(args: string[]) {

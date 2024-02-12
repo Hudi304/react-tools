@@ -85,7 +85,7 @@ export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): n
     }
 
     if (linter_value === 'ox' || linter_val_low === 'oxlint') {
-      ds_conf.linter = Linter.ES_LINT;
+      ds_conf.linter = Linter.OX_LINT;
       return 0;
     }
   }

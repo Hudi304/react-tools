@@ -36,12 +36,11 @@ async function ox_lint(dir_path: string, silent: boolean = true) {
   });
 }
 
-export async function lint(ds_conf: DataSourceConfig) {
+export async function lint(ds_conf: DataSourceConfig, path: string) {
   //prettier-ignore
   switch (ds_conf.linter) {
-    case Linter.ES_LINT: return await es_lint(ds_conf.baseURL);
-    case Linter.OX_LINT: return await ox_lint(ds_conf.baseURL);
-    default:
-      break;
+    case Linter.ES_LINT: return await es_lint(path);
+    case Linter.OX_LINT: return await ox_lint(path);
+    default: break;
   }
 }
