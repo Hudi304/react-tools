@@ -3,12 +3,12 @@ import { DS_CONFIGS } from '../configs/ds-config';
 import { execSync } from 'child_process';
 
 export async function is_git_tree_clean(): Promise<boolean> {
-  const rez = execSync('git status --porcelain').toString().trim();
+  const git_status_result = execSync('git status --porcelain').toString().trim();
 
-  if (!rez) return true;
+  if (!git_status_result) return true;
 
-  if (rez?.trim().length > 0) {
-    const changedFiles = rez
+  if (git_status_result?.trim().length > 0) {
+    const changedFiles = git_status_result
       .split('\n')
       .map((line) => line.trim())
       .filter((line) => line !== '');
@@ -22,8 +22,6 @@ export async function is_git_tree_clean(): Promise<boolean> {
 
       return isEnum || isModel || isController;
     });
-
-    console.log(onlyGeneratedFilesChanged);
 
     if (onlyGeneratedFilesChanged) {
       return true;
