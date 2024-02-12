@@ -64,7 +64,7 @@ export function group_apis(endpoints: ENDPOINT_schema[]): Map<string, ENDPOINT_s
 }
 
 function get_controller_name(endpoint: any): string {
-  return endpoint.tags ?? 'services';
+  return endpoint.tags[0] ?? 'services';
 }
 
 function get_request_body_content(endpoint: any) {
@@ -82,9 +82,7 @@ function get_request_body_content(endpoint: any) {
 function get_request_body_type(endpoint: any, ds_conf: DataSourceConfig): SCHEMA_TYPE | null {
   const requestContent = get_request_body_content(endpoint);
 
-  if (requestContent === null) {
-    return null;
-  }
+  if (!requestContent) return null;
 
   const app_json = requestContent['application/json'];
   const multipart_form_data = requestContent['multipart/form-data'];
@@ -98,9 +96,7 @@ function get_request_body_type(endpoint: any, ds_conf: DataSourceConfig): SCHEMA
     request_type = getType(app_json.schema);
   }
 
-  if (app_json == undefined) {
-    return null;
-  }
+  if (!app_json) return null;
 
   const schemaType = getSchemaType(app_json.schema);
   const generic_type_name = format_generic_type(schemaType, ds_conf);
@@ -133,7 +129,6 @@ function get_2xx_response_type(endpoint: any, ds_conf: DataSourceConfig): SCHEMA
     default:
       return null;
   }
-
   if (response_content === undefined) return null;
 
   const response_type_app_json = response_content['application/json'];
@@ -143,9 +138,7 @@ function get_2xx_response_type(endpoint: any, ds_conf: DataSourceConfig): SCHEMA
   if (schema === undefined) return null;
 
   const response_type: SCHEMA_TYPE = getSchemaType(schema);
-
   const generic_type_name = format_generic_type(response_type, ds_conf);
-
   if (generic_type_name === null) return null;
 
   const clean = clean_model_name(generic_type_name?.type || '');
