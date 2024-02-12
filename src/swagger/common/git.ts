@@ -1,18 +1,14 @@
-import { exec } from 'child_process';
 import { Print, Prompt } from './printers';
 import { DS_CONFIGS } from '../configs/ds-config';
+import { execSync } from 'child_process';
 
 export async function is_git_tree_clean(): Promise<boolean> {
-  const child_process = exec('git status --porcelain');
+  const rez = execSync('git status --porcelain').toString().trim();
 
-  console.log(`|${child_process.stdout}|`);
+  if (!rez) return true;
 
-  if (!child_process.stdout) return true;
-
-  const gitStatus = child_process.stdout.toString();
-
-  if (gitStatus?.trim().length > 0) {
-    const changedFiles = gitStatus
+  if (rez?.trim().length > 0) {
+    const changedFiles = rez
       .split('\n')
       .map((line) => line.trim())
       .filter((line) => line !== '');
@@ -32,7 +28,7 @@ export async function is_git_tree_clean(): Promise<boolean> {
     }
 
     const warning_message =
-      'Your git tree contains changes outside of the DS_CONFIGS folders! \n ' +
+      'Your git tree is not clean! \n ' +
       'We recommend you to commit your changes before running this script. \n ';
     Print.yellow(warning_message);
 
