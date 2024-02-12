@@ -14,8 +14,5 @@ Features List
 
 - [ ] Add a .file for settings
 - [ ] Change the param formatting with the class 
-
-
-
-
+- [ ] Add testing setup 
 

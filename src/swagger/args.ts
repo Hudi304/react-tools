@@ -1,7 +1,7 @@
 import { Print } from './common/printers';
 import { DataSourceConfig } from './configs/ds-types';
 import minimist from 'minimist';
-
+import { run_test } from './tests/main';
 export enum Param {
   LOCAL = 'l',
   DEV = 'd',
@@ -15,7 +15,14 @@ export enum Linter {
   None = 'none',
 }
 
-export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): number {
+export enum ArgsRes {
+  Success = 0,
+  Help = 1,
+  InvalidArguments = 2,
+  RunTests = 3,
+}
+
+export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): ArgsRes {
   const alias: minimist.Opts = {
     alias: {
       lnt: 'linter',
@@ -29,8 +36,6 @@ export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): n
 
   const argv = minimist(args.slice(2), alias);
 
-  console.log(argv);
-
   // Check for help option
   if (argv.h) {
     console.log('Usage:');
@@ -39,7 +44,13 @@ export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): n
     console.log('   -d             Get the swagger.json from the dev server.');
     console.log('   -t             Run tests');
     console.log('   --linter       Specify the linter (e.g., eslint, oxlint)');
-    return 1;
+    return ArgsRes.Help;
+  }
+
+  if (argv.t) {
+    ds_conf.params = Param.TESTS;
+    run_test();
+    return ArgsRes.RunTests;
   }
 
   if (argv.l) {
@@ -54,17 +65,12 @@ export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): n
 
   if (argv.d && argv.l) {
     Print.Err('Invalid arguments! -d -l');
-    return 2;
+    return ArgsRes.InvalidArguments;
   }
 
   if (!argv.d && !argv.l) {
     Print.Info('DEFAULT : Get swagger.json from the server.');
     ds_conf.params = Param.DEV;
-  }
-
-  if (argv.t) {
-    console.log('Run tests');
-    ds_conf.params = Param.TESTS;
   }
 
   if (argv.linter) {
@@ -74,21 +80,21 @@ export function add_args_to_config(args: string[], ds_conf: DataSourceConfig): n
 
     if (!linter_value) {
       ds_conf.linter = Linter.None;
-      return 0;
+      return ArgsRes.Success;
     }
 
     const linter_val_low = linter_value.toLowerCase().replaceAll(' ', '');
 
     if (linter_value === 'es' || linter_val_low === 'eslint') {
       ds_conf.linter = Linter.ES_LINT;
-      return 0;
+      return ArgsRes.Success;
     }
 
     if (linter_value === 'ox' || linter_val_low === 'oxlint') {
       ds_conf.linter = Linter.OX_LINT;
-      return 0;
+      return ArgsRes.Success;
     }
   }
 
-  return 0;
+  return ArgsRes.Success;
 }
